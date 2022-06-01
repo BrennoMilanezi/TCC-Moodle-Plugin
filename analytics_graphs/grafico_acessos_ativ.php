@@ -121,7 +121,7 @@ print_r($groupmembers);
         ]);
 
         var options = {
-          title : 'Média de Notas com quantidade de acessos por seção/exercício',
+          title : 'Média de Notas com média de acessos por seção/atividade',
           vAxes: {0: {title:"Nota Média", minValue: 0},
             1: {title:"Acessos", minValue: 0}},
           hAxis: {title: 'Exercício'},
@@ -138,9 +138,10 @@ print_r($groupmembers);
     </script>
   </head>
   <body>
-    <div id="selected" style="width: 20%;margin: auto;margin-bottom: 1%;margin-top: 2%;">
+    <div id="selected" style="width: 20%;margin: auto;margin-bottom: 1%;text-align: center;margin-top: 2%;">
+        <b>Atividade:</b>
         <select class="form-select" aria-label="Default select example" onChange="preencheCampo('filtro_grafico_notas', <?=$courseid?>+'@'+this.value,'usuario')">
-            <option value="0-919" selected>Todos</option>
+            <option value="0-919" selected>Todas</option>
             <?php foreach($result2 as $item){ 
                 $topico = str_replace("'", "", $item->topico);
                 $exercicio = str_replace("'", "", $item->exercicio);
@@ -149,7 +150,7 @@ print_r($groupmembers);
         </select>
     </div>
     <div id="filtro_grafico_notas">
-        <div id="chart_div" style="width: 900px; height: 500px; margin: auto;"></div>
+        <div id="chart_div" style="width: 1050px; height: 450px; margin: auto;"></div>
     </div>
   </body>
 </html>

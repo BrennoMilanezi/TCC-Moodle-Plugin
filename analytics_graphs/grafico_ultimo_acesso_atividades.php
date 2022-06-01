@@ -10,7 +10,7 @@ $id_curso = $_GET['id'];
 $sql = "SELECT ROW_NUMBER() OVER () as id, usr.id as id_usuario, CONCAT(usr.firstname, ' ', usr.lastname) as usuario
 from mdl_user_lastaccess mul 
 JOIN mdl_user usr ON usr.id = mul.userid 
-WHERE mul.courseid = ?
+WHERE mul.courseid = ? AND usr.firstname NOT LIKE '%Admin%'
 ORDER BY usuario";
 
 $array_users = [];
@@ -31,33 +31,35 @@ foreach($result as $item){
     $result_3 = $DB->get_records_sql($sql_3);
     $total_atv_feitas = 0;
     $total_atv_n_feitas = 0;
+    $total_atividade = count($result_3);
+    if($total_atividade > 0){
+        foreach($result_3 as $item_3){
 
-    foreach($result_3 as $item_3){
+            $sql_4 = "SELECT usr.id as id_usuario
+            FROM mdl_grade_grades gg
+            JOIN mdl_user usr ON usr.id = gg.userid
+            JOIN mdl_grade_items gi ON gg.itemid = gi.id
+            JOIN mdl_".$item_3->itemmodule." m_modl
+            JOIN mdl_modules mm  ON mm.name = '".$item_3->itemmodule."'
+            JOIN mdl_course_modules cm ON cm.instance = m_modl.id AND cm.module = mm.id
+            JOIN mdl_course_sections mcs ON mcs.id = cm.section
+            WHERE m_modl.id = '".$item_3->iteminstance."' AND usr.firstname NOT LIKE '%Admin%'
+            AND gi.itemmodule = '".$item_3->itemmodule."' AND gi.iteminstance = '".$item_3->iteminstance."'
+            AND gi.courseid = '".$id_curso."' AND gg.userid = '".$item->id_usuario."'";
 
-        $sql_4 = "SELECT usr.id as id_usuario
-        FROM mdl_grade_grades gg
-        JOIN mdl_user usr ON usr.id = gg.userid
-        JOIN mdl_grade_items gi ON gg.itemid = gi.id
-        JOIN mdl_".$item_3->itemmodule." m_modl
-        JOIN mdl_modules mm  ON mm.name = '".$item_3->itemmodule."'
-        JOIN mdl_course_modules cm ON cm.instance = m_modl.id AND cm.module = mm.id
-        JOIN mdl_course_sections mcs ON mcs.id = cm.section
-        WHERE m_modl.id = '".$item_3->iteminstance."'
-        AND gi.itemmodule = '".$item_3->itemmodule."' AND gi.iteminstance = '".$item_3->iteminstance."'
-        AND gi.courseid = '".$id_curso."' AND gg.userid = '".$item->id_usuario."'";
+            $result_4 = $DB->get_records_sql($sql_4);
 
-        $result_4 = $DB->get_records_sql($sql_4);
+            if(count($result_4) > 0){
+                $total_atv_feitas++;
+            }else{
+                $total_atv_n_feitas++;
+            }
 
-        if(count($result_4) > 0){
-            $total_atv_feitas++;
-        }else{
-            $total_atv_n_feitas++;
         }
 
+        $array_users[] = array("id_usuario" => $item->id_usuario, "usuario" => $item->usuario, "ultimo_acesso" => $result_2[1]->ultimo_acesso, 
+        "total_atv_feitas" => $total_atv_feitas, "total_atv_n_feitas" => $total_atv_n_feitas);
     }
-
-    $array_users[] = array("id_usuario" => $item->id_usuario, "usuario" => $item->usuario, "ultimo_acesso" => $result_2[1]->ultimo_acesso, 
-    "total_atv_feitas" => $total_atv_feitas, "total_atv_n_feitas" => $total_atv_n_feitas);
 }
 
 function converte_data($data) {
@@ -78,12 +80,14 @@ function converte_data($data) {
         <div class="row">
             <div class="col-3"></div>
             <div class="col-6">
+                <b>Total de atividades a serem entregues: <?=$total_atividade?></b><br>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                         <th scope="col">#</th>
                         <th scope="col">Aluno</th>
                         <th scope="col">Último acesso</th>
+                        <th scope="col">Dias</th>
                         <th scope="col">Atv. feitas</th>
                         <th scope="col">Atv. não feitas</th>
                         </tr>
@@ -94,11 +98,21 @@ function converte_data($data) {
                             $cont = $i + 1;
                             $user = $array_users[$i];
                             $usuario = $user["usuario"];
+                            $diferenca = strtotime(date('Y-m-d')) - strtotime($user["ultimo_acesso"]);
+                            $dias = floor($diferenca / (60 * 60 * 24));
                             $ultimo_acesso = converte_data($user["ultimo_acesso"]);
                             $total_atv_feitas = $user["total_atv_feitas"];
                             $total_atv_n_feitas = $user["total_atv_n_feitas"];
+                            $total_atv = $total_atv_feitas + $total_atv_n_feitas;
+                            $percentual_atv_feitas = 100*$total_atv_feitas/$total_atv;
+                            $back_ground = "";
+                            if($percentual_atv_feitas < 50){
+                                $back_ground = "style=\"background: #ff00003d;\"";
+                            }elseif($percentual_atv_feitas >= 50 && $percentual_atv_feitas < 100){
+                                $back_ground = "style=\"background: #ffff003b;\"";
+                            }
                 
-                            $teste = "<tr><td>".$cont."</td><td>".$usuario."</td><td>".$ultimo_acesso."</td><td>".$total_atv_feitas."</td><td>".$total_atv_n_feitas."</td></tr>";
+                            $teste = "<tr ".$back_ground."><td>".$cont."</td><td>".$usuario."</td><td>".$ultimo_acesso."</td><td>".$dias."</td><td>".$total_atv_feitas."</td><td>".$total_atv_n_feitas."</td></tr>";
 
                             echo $teste;
                         }

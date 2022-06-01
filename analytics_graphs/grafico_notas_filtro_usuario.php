@@ -10,7 +10,7 @@ $id_curso = $_GET['c'];
 $itemmodule = $_GET['m'];
 $iteminstance = $_GET['i'];
 
-$nome_mapa = "'Notas dos alunos com quantidades de acessos da seção/exercício'";
+$nome_mapa = "'Notas dos alunos com quantidade de acessos da seção/atividade'";
 
 if($iteminstance == 919){
 
@@ -74,7 +74,7 @@ if($iteminstance == 919){
         ]);
 
         var options = {
-          title : 'Média de Notas com quantidade de acessos por seção/exercício',
+          title : 'Média de Notas com quantidade de acessos por seção/atividade',
           vAxes: {0: {title:"Nota Média", minValue: 0},
             1: {title:"Acessos", minValue: 0}},
           hAxis: {title: 'Exercício'},
@@ -91,7 +91,7 @@ if($iteminstance == 919){
     </script>
   </head>
   <body>
-    <div id="chart_div_aluno" style="width: 900px; height: 500px; margin: auto;"></div>
+    <div id="chart_div_aluno" style="width: 1050px; height: 450px; margin: auto;"></div>
   </body>
 </html>
 <?php
@@ -105,7 +105,7 @@ if($iteminstance == 919){
   JOIN mdl_modules mm  ON mm.name = '".$itemmodule."'
   JOIN mdl_course_modules cm ON cm.instance = m_modl.id AND cm.module = mm.id
   JOIN mdl_course_sections mcs ON mcs.id = cm.section
-  WHERE m_modl.id = '".$iteminstance."'
+  WHERE m_modl.id = '".$iteminstance."' AND usr.firstname NOT LIKE '%Admin%'
   AND gi.itemmodule = '".$itemmodule."' AND gi.iteminstance = '".$iteminstance."'
   AND gi.courseid = '".$id_curso."'";
 
@@ -165,7 +165,7 @@ if($iteminstance == 919){
     </script>
   </head>
   <body>
-      <div id="chart_div_aluno" style="width: 1200px; height: 500px; margin: auto;"></div>
+      <div id="chart_div_aluno" style="width: 1050px; height: 450px; margin: auto;"></div>
   </body>
 </html>
 <?php
