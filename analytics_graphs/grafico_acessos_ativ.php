@@ -69,6 +69,7 @@ foreach($result2 as $item){
     $item->topico = $result3[1]->name;
 }
 
+$total_acessos = 0;
 foreach($result2 as $item){
 
     $sql2 = "SELECT ROW_NUMBER() OVER () as id, mcs.name from mdl_logstore_standard_log l
@@ -80,6 +81,10 @@ foreach($result2 as $item){
     $result3 = $DB->get_records_sql($sql2, array($courseid, $courseid));
 
     $item->acessos = count($result3);
+
+    if($item->acessos > $total_acessos){
+      $total_acessos = $item->acessos;
+    }
 }
 /*
 $array = array();
@@ -104,6 +109,63 @@ print_r($groupmembers);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="ajax/preenche.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!--COMECO CHART JS-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const data = {
+          labels: 
+          <?php 
+            $array_exercicio = "";
+            $array_nota = "";
+            $array_acessos = "";
+            foreach($result2 as $item){
+              $topico = str_replace("'", "", $item->topico);
+              $exercicio = str_replace("'", "", $item->exercicio);
+              $array_exercicio .= "'".$topico." - ".$exercicio."',";
+              $array_nota .= $item->media.",";
+              $array_acessos .= number_format($item->acessos*100/$total_acessos, 2, '.', '').",";
+            }
+            $array_exercicio = substr($array_exercicio, 0, -1);
+            $array_nota = substr($array_nota, 0, -1);
+            $array_acessos = substr($array_acessos, 0, -1);
+          ?>
+          [<?=$array_exercicio?>],
+          datasets: [{
+            label: 'Nota Média',
+            data: [<?=$array_nota?>],
+            fill: true,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgb(255, 99, 132)',
+            pointBackgroundColor: 'rgb(255, 99, 132)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(255, 99, 132)'
+          }, {
+            label: 'Percentual de acessos',
+            data: [<?=$array_acessos?>],
+            fill: true,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgb(54, 162, 235)',
+            pointBackgroundColor: 'rgb(54, 162, 235)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(54, 162, 235)'
+          }]
+        };
+
+        const config = {
+          type: 'radar',
+          data: data,
+          options: {
+            elements: {
+              line: {
+                borderWidth: 3
+              }
+            }
+          },
+        };
+    </script>
+    <!--FIM CHART JS-->
     <script type="text/javascript">
        google.charts.load('current', {'packages':['corechart']});
        google.charts.setOnLoadCallback(drawVisualization);
@@ -138,7 +200,7 @@ print_r($groupmembers);
     </script>
   </head>
   <body>
-    <div id="selected" style="width: 20%;margin: auto;margin-bottom: 1%;text-align: center;margin-top: 2%;">
+    <div id="selected" style="width: 20%;margin: auto;margin-bottom: 1%;text-align: center;margin-top: 1%;">
         <b>Atividade:</b>
         <select class="form-select" aria-label="Default select example" onChange="preencheCampo('filtro_grafico_notas', <?=$courseid?>+'@'+this.value,'usuario')">
             <option value="0-919" selected>Todas</option>
@@ -151,8 +213,17 @@ print_r($groupmembers);
     </div>
     <div id="filtro_grafico_notas">
         <div id="chart_div" style="width: 1050px; height: 450px; margin: auto;"></div>
+        <div style="width: 900px; height: 450px; margin: auto;">
+          <canvas id="myChart"></canvas>
+        </div>
     </div>
   </body>
+  <script>
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+</script>
 </html>
 <?php
 }else{
