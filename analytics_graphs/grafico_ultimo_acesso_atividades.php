@@ -74,22 +74,34 @@ function converte_data($data) {
   <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="ajax/preenche.js"></script>
   </head>
   <body>
-    <div style="margin-top: 3%;" class="container">
-        <div class="row">
+    <div style="margin-top: 1%;" class="container">
+        <div id="selected" style="width: 20%;margin: auto;margin-bottom: 2%;text-align: center;">
+            <b>Tempo:</b>
+            <select class="form-select" aria-label="Default select example" onChange="preencheCampo('filtro_grafico_acesso_ativ', <?=$id_curso?>+'@'+this.value,'usuario')">
+                <option value="0" selected>Selecione...</option>
+                <option value="1" >Últimas duas semanas</option>
+                <option value="2" >Último mês</option>
+                <option value="3" >Últimos dois meses</option>
+            </select>
+        </div>
+        <div id="filtro_grafico_acesso_ativ" class="row">
             <div class="col-3"></div>
             <div class="col-6">
-                <b>Total de atividades a serem entregues: <?=$total_atividade?></b><br>
+                <b>Total de atividades: <?=$total_atividade?></b><br>
+                <font><b style="color: #ff000094;">Vermelho</b> - alunos com atividades entregues abaixo de 40%</font><br>
+                <font><b style="color: #ffff00c2;">Amarelo</b> - alunos com atividades entregues entre 40% a 70%</font><br>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                         <th scope="col">#</th>
                         <th scope="col">Aluno</th>
                         <th scope="col">Último acesso</th>
-                        <th scope="col">Dias</th>
-                        <th scope="col">Atv. feitas</th>
-                        <th scope="col">Atv. não feitas</th>
+                        <th scope="col">Total dias do últ. acesso</th>
+                        <th scope="col">Atv. entregues</th>
+                        <th scope="col">Atv. não entregues</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,10 +118,10 @@ function converte_data($data) {
                             $total_atv = $total_atv_feitas + $total_atv_n_feitas;
                             $percentual_atv_feitas = 100*$total_atv_feitas/$total_atv;
                             $back_ground = "";
-                            if($percentual_atv_feitas < 50){
+                            if($percentual_atv_feitas < 40){
                                 $back_ground = "style=\"background: #ff00003d;\"";
-                            }elseif($percentual_atv_feitas >= 50 && $percentual_atv_feitas < 100){
-                                $back_ground = "style=\"background: #ffff003b;\"";
+                            }elseif($percentual_atv_feitas >= 40 && $percentual_atv_feitas < 70){
+                                $back_ground = "style=\"background: #ffff006b;\"";
                             }
                 
                             $teste = "<tr ".$back_ground."><td>".$cont."</td><td>".$usuario."</td><td>".$ultimo_acesso."</td><td>".$dias."</td><td>".$total_atv_feitas."</td><td>".$total_atv_n_feitas."</td></tr>";

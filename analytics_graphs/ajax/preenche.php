@@ -20,4 +20,14 @@ if($campo == "filtro_grafico_notas" && $tipo == "usuario"){
 
     echo "<center><iframe style=\"width: 75%;height: 75%;\" src=\"http://".$host."/blocks/analytics_graphs/grafico_notas_filtro_usuario.php?c=".$id_curso."&m=".$itemmodule."&i=".$iteminstance."\"></iframe></center>";
 }
+
+if($campo == "filtro_grafico_acesso_ativ" && $tipo == "usuario"){
+    $array_valor = explode("@", $valor);
+    $id_curso = $array_valor[0];
+    $tempo = $array_valor[1];
+
+    $host = $_SERVER['HTTP_HOST'];
+
+    echo "<center><iframe style=\"width: 75%;height: 1000px;\" src=\"http://".$host."/blocks/analytics_graphs/grafico_filtro_ultimo_acesso.php?c=".$id_curso."&t=".$tempo."\"></iframe></center>";
+}
 ?>
