@@ -127,6 +127,7 @@ if($iteminstance == 919){
         $item->acessos = 0.00;
       }
   }
+  sort($result3);
 ?>
 <html>
   <head>
