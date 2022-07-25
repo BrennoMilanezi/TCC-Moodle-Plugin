@@ -212,10 +212,10 @@ print_r($groupmembers);
         </select>
     </div>
     <div id="filtro_grafico_notas">
-        <div id="chart_div" style="width: 1050px; height: 450px; margin: auto;"></div>
-        <div style="width: 900px; height: 450px; margin: auto;">
-          <canvas id="myChart"></canvas>
+        <div>
+          <canvas id="myChart" style="width: 900px; height: 450px; margin: auto;"></canvas>
         </div>
+        <div id="chart_div" style="width: 1050px; height: 450px; margin: auto;"></div>
     </div>
   </body>
   <script>
