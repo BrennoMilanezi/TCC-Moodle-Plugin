@@ -63,7 +63,7 @@ if($iteminstance == 919){
 
       function drawVisualization() {
         var data = new google.visualization.arrayToDataTable([
-          ['Seção - Exercicio', 'Nota Média', 'Acessos'],
+          ['Seção - Exercicio', 'Nota média da turma', 'Quantidade de acessos da turma'],
           <?php foreach($result3 as $item){
           $topico = str_replace("'", "", $item->topico);
           $exercicio = str_replace("'", "", $item->exercicio);
@@ -74,10 +74,10 @@ if($iteminstance == 919){
         ]);
 
         var options = {
-          title : 'Média de Notas com quantidade de acessos por seção/atividade',
-          vAxes: {0: {title:"Nota Média", minValue: 0},
-            1: {title:"Acessos", minValue: 0}},
-          hAxis: {title: 'Exercício'},
+          title : 'Média de notas com quantidade de acessos da turma por seção/atividade',
+          vAxes: {0: {title:"Nota média", minValue: 0},
+            1: {title:"Quantidade de acessos da turma", minValue: 0}},
+          hAxis: {title: 'Atividade'},
           seriesType: 'bars',
           series:{
             0:{targetAxisIndex:0},
@@ -117,10 +117,10 @@ if($iteminstance == 919){
       JOIN mdl_modules mm  ON mm.name = '".$itemmodule."'
       JOIN mdl_course_modules m ON m.id = l.contextinstanceid 
       JOIN mdl_course_sections mcs ON mcs.id = m.section
-      WHERE mcs.name = '".$item->topico."' AND l.userid = '".$item->id_usuario."' AND l.courseid = '".$id_curso."' AND m.course = '".$id_curso."' AND (l.action = 'viewed' OR l.action = 'submission')
+      WHERE mcs.name = '".$item->topico."' AND l.userid = ? AND l.courseid = ? AND m.course = ? AND (l.action = 'viewed' OR l.action = 'submission')
       GROUP BY eventname";
 
-      $result4 = $DB->get_records_sql($sql3);
+      $result4 = $DB->get_records_sql($sql3, array($item->id_usuario, $id_curso, $id_curso));
       if($result4[1]->acessos){      
         $item->acessos = $result4[1]->acessos;
       }else{
@@ -140,7 +140,7 @@ if($iteminstance == 919){
        google.charts.setOnLoadCallback(drawVisualizationAluno);
       function drawVisualizationAluno() {
         var data_aluno = new google.visualization.arrayToDataTable([
-          ['Aluno', 'Nota', 'Acessos'],
+          ['Aluno', 'Nota', 'Quantidade de acessos do aluno'],
           <?php foreach($result3 as $item){
             $nome_usuario = "'".$item->usuario."'"; 
           ?>
@@ -151,7 +151,7 @@ if($iteminstance == 919){
         var options_aluno = {
           title : <?=$nome_mapa?>,
           vAxes: {0: {title:"Nota", minValue: 0},
-            1: {title:"Acessos", minValue: 0}},
+            1: {title:"Quantidade de acessos do aluno", minValue: 0}},
           hAxis: {title: 'Aluno'},
           seriesType: 'bars',
           series:{

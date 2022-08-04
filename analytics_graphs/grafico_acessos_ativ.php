@@ -121,7 +121,7 @@ print_r($groupmembers);
             foreach($result2 as $item){
               $topico = str_replace("'", "", $item->topico);
               $exercicio = str_replace("'", "", $item->exercicio);
-              $array_exercicio .= "'".$topico." - ".$exercicio."',";
+              $array_exercicio .= "'".$topico."-".$exercicio."',";
               $array_nota .= $item->media.",";
               $array_acessos .= number_format($item->acessos*100/$total_acessos, 2, '.', '').",";
             }
@@ -131,7 +131,7 @@ print_r($groupmembers);
           ?>
           [<?=$array_exercicio?>],
           datasets: [{
-            label: 'Nota Média',
+            label: 'Nota média da turma',
             data: [<?=$array_nota?>],
             fill: true,
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -141,7 +141,7 @@ print_r($groupmembers);
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: 'rgb(255, 99, 132)'
           }, {
-            label: 'Percentual de acessos',
+            label: 'Percentual de acessos da turma',
             data: [<?=$array_acessos?>],
             fill: true,
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -172,21 +172,21 @@ print_r($groupmembers);
 
       function drawVisualization() {
         var data = new google.visualization.arrayToDataTable([
-          ['Seção - Exercicio', 'Nota Média', 'Acessos'],
+          ['Seção - Exercicio', 'Nota média da turma', 'Quantidade de acessos da turma'],
           <?php foreach($result2 as $item){
           $topico = str_replace("'", "", $item->topico);
           $exercicio = str_replace("'", "", $item->exercicio);
-          $exercicio = "'".$topico." - ".$exercicio."'";
+          $exercicio = "'".$exercicio."'";
           ?>
             [<?=$exercicio?>, <?=$item->media?>, <?=$item->acessos?>],
           <?php } ?>
         ]);
 
         var options = {
-          title : 'Média de Notas com média de acessos por seção/atividade',
-          vAxes: {0: {title:"Nota Média", minValue: 0},
-            1: {title:"Acessos", minValue: 0}},
-          hAxis: {title: 'Exercício'},
+          title : 'Média de notas com quantidade de acessos da turma por seção/atividade',
+          vAxes: {0: {title:"Nota média", minValue: 0},
+            1: {title:"Quantidade de acessos da turma", minValue: 0}},
+          hAxis: {title: 'Atividade'},
           seriesType: 'bars',
           series:{
             0:{targetAxisIndex:0},
@@ -213,9 +213,9 @@ print_r($groupmembers);
     </div>
     <div id="filtro_grafico_notas">
         <div>
-          <canvas id="myChart" style="width: 900px; height: 450px; margin: auto;"></canvas>
+          <canvas id="myChart" style="width: 1000px; height: 450px; margin: auto;"></canvas>
         </div>
-        <div id="chart_div" style="width: 1050px; height: 450px; margin: auto;"></div>
+        <div id="chart_div" style="width: 1200px; height: 600px; margin: auto;"></div>
     </div>
   </body>
   <script>
